@@ -1,18 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:meals_app/dummy_data.dart';
+import 'package:meals_app/models/meal.dart';
 import 'package:meals_app/widgets/meal_item.dart';
 
-class CategoryMeals extends StatelessWidget {
+class CategoryMeals extends StatefulWidget {
   static const routeName = '/category-meals';
+  final List<Meal> availableMeals;
+
+  CategoryMeals(this.availableMeals);
+
   @override
-  Widget build(BuildContext context) {
+  _CategoryMealsState createState() => _CategoryMealsState();
+}
+
+class _CategoryMealsState extends State<CategoryMeals> {
+  List<Meal> meals = [];
+  String title = '';
+
+  @override
+  void didChangeDependencies() {
     final routeArgs =
         ModalRoute.of(context).settings.arguments as Map<String, String>;
-    final String title = routeArgs['title'];
+    title = routeArgs['title'];
     final String id = routeArgs['id'];
-    final categories = DUMMY_MEALS
+    meals = widget.availableMeals
         .where((element) => element.categories.contains(id))
         .toList();
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -21,15 +38,15 @@ class CategoryMeals extends StatelessWidget {
         child: ListView.builder(
           itemBuilder: (_, index) {
             return MealItem(
-              affordability: categories[index].affordability,
-              complexity: categories[index].complexity,
-              duration: categories[index].duration,
-              imageUrl: categories[index].imageUrl,
-              title: categories[index].title,
-              id: categories[index].id,
+              affordability: meals[index].affordability,
+              complexity: meals[index].complexity,
+              duration: meals[index].duration,
+              imageUrl: meals[index].imageUrl,
+              title: meals[index].title,
+              id: meals[index].id,
             );
           },
-          itemCount: categories.length,
+          itemCount: meals.length,
         ),
       ),
     );
